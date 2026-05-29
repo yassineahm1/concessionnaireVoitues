@@ -1,0 +1,43 @@
+## .NET
+bin/
+obj/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.cache
+*.dll
+*.exe
+*.apphost.exe
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## Visual Studio / VS Code
+.vs/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+## Node / React
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+## Logs et OS
+logs/
+*.log
+.DS_Store
+Thumbs.db
+
+## Secrets (ne jamais versionner)
+appsettings.*.local.json
+secrets.json
+.env
+.env.*
