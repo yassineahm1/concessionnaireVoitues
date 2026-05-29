@@ -1,16 +1,78 @@
-# React + Vite
+# Frontend React — concessionnaireVoituesGrA
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interface React (Vite) pour le module **Clients**, connectée à l'API REST `ClientsAPI` du backend ASP.NET Core.
 
-Currently, two official plugins are available:
+## Prérequis
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Node.js (LTS recommandé)
+- Backend .NET lancé en HTTPS : `https://localhost:7202`
+- Base SQL Server `concessionnaireVoituresGrA` créée (script dans `../concessionnaireVoituesGrA/Scripts/`)
 
-## React Compiler
+## Installation
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm install
+```
 
-## Expanding the ESLint configuration
+## Développement
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm run dev
+```
+
+Application : [http://localhost:12054](http://localhost:12054)  
+Redirection automatique vers `/clients`.
+
+### Configuration API
+
+Fichier `.env.development` :
+
+```
+VITE_API_BASE_URL=https://localhost:7202
+```
+
+Modifier cette URL si le backend utilise un autre port.
+
+## Build production
+
+```bash
+npm run build
+npm run preview
+```
+
+## Routes (module Clients)
+
+| Route | Écran MVC équivalent |
+|-------|----------------------|
+| `/clients` | Clients/Index |
+| `/clients/new` | Clients/Create |
+| `/clients/:cine` | Clients/Details |
+| `/clients/:cine/edit` | Clients/Edit |
+| `/clients/:cine/delete` | Clients/Delete |
+
+## API utilisée
+
+Base : `{VITE_API_BASE_URL}/api/ClientsAPI`
+
+- `GET /` — liste
+- `GET /{cine}` — détail
+- `POST /` — création
+- `PUT /{cine}` — modification
+- `DELETE /{cine}` — suppression
+
+## Structure du code
+
+```
+src/
+├── config/apiConfig.js
+├── services/clientsService.js
+├── components/
+│   ├── clients/     ClientTable, ClientForm, ClientDetailsDisplay
+│   ├── common/      Loading, ErrorMessage
+│   └── layout/      Layout, Navbar
+└── pages/clients/   Pages CRUD
+```
+
+## Modules non couverts (Phase B)
+
+Voitures et Comptes ne sont pas implémentés en React : aucune API REST n'existe pour ces modules dans le backend actuel.
