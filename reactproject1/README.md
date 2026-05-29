@@ -1,6 +1,6 @@
 # Frontend React — concessionnaireVoituesGrA
 
-Interface React (Vite) pour les modules **Clients** et **Voitures**, connectée aux API REST du backend ASP.NET Core.
+Interface React (Vite) pour les modules **Clients**, **Voitures** et **Comptes**, connectée aux API REST du backend ASP.NET Core.
 
 ## Prérequis
 
@@ -31,7 +31,7 @@ Fichier `.env.development` :
 VITE_API_BASE_URL=https://localhost:7202
 ```
 
-Modifier cette URL si le backend utilise un autre port.
+Le backend doit tourner en **HTTPS** pour les cookies de session (module Comptes).
 
 ## Build production
 
@@ -42,45 +42,45 @@ npm run preview
 
 ## Routes
 
-### Clients
+### Clients / Voitures
+
+| Module | Base route |
+|--------|------------|
+| Clients | `/clients`, `/clients/new`, `/clients/:cine`, … |
+| Voitures | `/voitures`, `/voitures/new`, `/voitures/:matricule`, … |
+
+### Comptes
 
 | Route | Écran MVC équivalent |
 |-------|----------------------|
-| `/clients` | Clients/Index |
-| `/clients/new` | Clients/Create |
-| `/clients/:cine` | Clients/Details |
-| `/clients/:cine/edit` | Clients/Edit |
-| `/clients/:cine/delete` | Clients/Delete |
-
-### Voitures
-
-| Route | Écran MVC équivalent |
-|-------|----------------------|
-| `/voitures` | Voitures/Index |
-| `/voitures/new` | Voitures/Create |
-| `/voitures/:matricule` | Voitures/Details |
-| `/voitures/:matricule/edit` | Voitures/Edit |
-| `/voitures/:matricule/delete` | Voitures/Delete |
+| `/comptes` | Comptes/Index (Admin) |
+| `/comptes/signin` | Comptes/Authentifier |
+| `/comptes/signup` | Comptes/Create |
 
 ## API utilisée
 
-- `{VITE_API_BASE_URL}/api/ClientsAPI` — CRUD clients
-- `{VITE_API_BASE_URL}/api/VoituresAPI` — CRUD voitures (POST retourne 400 si matricule dupliqué)
+- `/api/ClientsAPI` — CRUD clients
+- `/api/VoituresAPI` — CRUD voitures
+- `/api/ComptesAPI` — auth cookies (`credentials: 'include'`)
+  - `POST /authentifier` — connexion
+  - `POST /register` — inscription
+  - `POST /signout` — déconnexion
+  - `GET /` — liste comptes (Admin)
+
+Compte test en BDD : `Admin` / `admin`
 
 ## Structure du code
 
 ```
 src/
 ├── config/apiConfig.js
-├── services/clientsService.js
+├── context/AuthContext.jsx
+├── services/
 ├── components/
-│   ├── clients/     ClientTable, ClientForm, ClientDetailsDisplay
-│   ├── voitures/    VoitureTable, VoitureForm, VoitureDetailsDisplay
-│   ├── common/      Loading, ErrorMessage
-│   └── layout/      Layout, Navbar
-└── pages/clients/   Pages CRUD
+│   ├── clients/
+│   ├── voitures/
+│   ├── comptes/
+│   ├── common/
+│   └── layout/
+└── pages/
 ```
-
-## Modules non couverts (Phase B2)
-
-Comptes (auth, inscription) : aucune API REST pour l'instant.

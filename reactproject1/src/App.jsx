@@ -10,10 +10,16 @@ import VoitureDetailsPage from './pages/voitures/VoitureDetailsPage'
 import VoitureCreatePage from './pages/voitures/VoitureCreatePage'
 import VoitureEditPage from './pages/voitures/VoitureEditPage'
 import VoitureDeletePage from './pages/voitures/VoitureDeletePage'
+import ComptesListPage from './pages/comptes/ComptesListPage'
+import CompteSignInPage from './pages/comptes/CompteSignInPage'
+import CompteSignUpPage from './pages/comptes/CompteSignUpPage'
+import CompteDetailsPage from './pages/comptes/CompteDetailsPage'
+import CompteEditPage from './pages/comptes/CompteEditPage'
+import CompteDeletePage from './pages/comptes/CompteDeletePage'
 import './App.css'
 
 /**
- * Routes Clients et Voitures — alignées sur les modules MVC.
+ * Routes Clients, Voitures et Comptes — alignées sur les modules MVC.
  */
 function App() {
   return (
@@ -30,6 +36,12 @@ function App() {
         <Route path="voitures/:matricule/edit" element={<VoitureEditPage />} />
         <Route path="voitures/:matricule/delete" element={<VoitureDeletePage />} />
         <Route path="voitures/:matricule" element={<VoitureDetailsPage />} />
+        <Route path="comptes" element={<ComptesListPage />} />
+        <Route path="comptes/signin" element={<CompteSignInPage />} />
+        <Route path="comptes/signup" element={<CompteSignUpPage />} />
+        <Route path="comptes/:username/edit" element={<CompteEditPage />} />
+        <Route path="comptes/:username/delete" element={<CompteDeletePage />} />
+        <Route path="comptes/:username" element={<CompteDetailsPage />} />
       </Route>
     </Routes>
   )

@@ -1,10 +1,25 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
+import { signOut } from '../../services/comptesService'
 
 /**
- * Barre de navigation — Clients et Voitures (API REST disponibles).
- * Comptes : Phase B2 (pas d'API REST pour l'instant).
+ * Barre de navigation — alignée sur Views/Shared/_Layout.cshtml.
  */
 function Navbar() {
+  const { isAuthenticated, logout } = useAuth()
+  const navigate = useNavigate()
+
+  async function handleSignOut(event) {
+    event.preventDefault()
+    try {
+      await signOut()
+    } catch {
+      // déconnexion locale même si l'API échoue
+    }
+    logout()
+    navigate('/clients')
+  }
+
   return (
     <nav className="app-navbar">
       <span className="app-brand">concessionnaireVoituesGrA</span>
@@ -24,6 +39,37 @@ function Navbar() {
           >
             Voitures
           </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/comptes"
+            className={({ isActive }) => (isActive ? 'app-nav-link active' : 'app-nav-link')}
+          >
+            Comptes
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/comptes/signup"
+            className={({ isActive }) => (isActive ? 'app-nav-link active' : 'app-nav-link')}
+          >
+            Signup
+          </NavLink>
+        </li>
+        {!isAuthenticated && (
+          <li>
+            <NavLink
+              to="/comptes/signin"
+              className={({ isActive }) => (isActive ? 'app-nav-link active' : 'app-nav-link')}
+            >
+              Signin
+            </NavLink>
+          </li>
+        )}
+        <li>
+          <button type="button" className="app-nav-link" onClick={handleSignOut}>
+            SignOut
+          </button>
         </li>
       </ul>
     </nav>

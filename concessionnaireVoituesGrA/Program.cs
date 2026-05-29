@@ -28,6 +28,9 @@ namespace concessionnaireVoituesGrA
                 options.LoginPath = "/Comptes/Authentifier";       //action pour se connecter
                 options.LogoutPath = "/Comptes/Signout"; //action pour se déconnecter
                 options.AccessDeniedPath = "/Comptes/AccessDenied"; //action en cas d’accès refusé
+                // Cookie accessible depuis le frontend React (origine différente, HTTPS)
+                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             });
             
             builder.Services.AddAuthorization();
@@ -39,7 +42,8 @@ namespace concessionnaireVoituesGrA
                 {
                     policy.WithOrigins("http://localhost:12054")
                           .AllowAnyHeader()
-                          .AllowAnyMethod();
+                          .AllowAnyMethod()
+                          .AllowCredentials();
                 });
             });
             var app = builder.Build();
@@ -55,10 +59,9 @@ namespace concessionnaireVoituesGrA
             app.UseHttpsRedirection();
             app.UseRouting();
 
-            // Middleware d'authentification et d'autorisation
+            app.UseCors();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors();
             app.MapStaticAssets();
             app.MapControllers();
             app.MapControllerRoute(
