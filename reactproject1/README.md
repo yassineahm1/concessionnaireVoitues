@@ -1,6 +1,6 @@
 # Frontend React — concessionnaireVoituesGrA
 
-Interface React (Vite) pour le module **Clients**, connectée à l'API REST `ClientsAPI` du backend ASP.NET Core.
+Interface React (Vite) pour les modules **Clients**, **Voitures** et **Comptes**, connectée aux API REST du backend ASP.NET Core.
 
 ## Prérequis
 
@@ -31,7 +31,7 @@ Fichier `.env.development` :
 VITE_API_BASE_URL=https://localhost:7202
 ```
 
-Modifier cette URL si le backend utilise un autre port.
+Le backend doit tourner en **HTTPS** pour les cookies de session (module Comptes).
 
 ## Build production
 
@@ -40,39 +40,47 @@ npm run build
 npm run preview
 ```
 
-## Routes (module Clients)
+## Routes
+
+### Clients / Voitures
+
+| Module | Base route |
+|--------|------------|
+| Clients | `/clients`, `/clients/new`, `/clients/:cine`, … |
+| Voitures | `/voitures`, `/voitures/new`, `/voitures/:matricule`, … |
+
+### Comptes
 
 | Route | Écran MVC équivalent |
 |-------|----------------------|
-| `/clients` | Clients/Index |
-| `/clients/new` | Clients/Create |
-| `/clients/:cine` | Clients/Details |
-| `/clients/:cine/edit` | Clients/Edit |
-| `/clients/:cine/delete` | Clients/Delete |
+| `/comptes` | Comptes/Index (Admin) |
+| `/comptes/signin` | Comptes/Authentifier |
+| `/comptes/signup` | Comptes/Create |
 
 ## API utilisée
 
-Base : `{VITE_API_BASE_URL}/api/ClientsAPI`
+- `/api/ClientsAPI` — CRUD clients
+- `/api/VoituresAPI` — CRUD voitures
+- `/api/ComptesAPI` — auth cookies (`credentials: 'include'`)
+  - `POST /authentifier` — connexion
+  - `POST /register` — inscription
+  - `POST /signout` — déconnexion
+  - `GET /` — liste comptes (Admin)
 
-- `GET /` — liste
-- `GET /{cine}` — détail
-- `POST /` — création
-- `PUT /{cine}` — modification
-- `DELETE /{cine}` — suppression
+Compte test en BDD : `Admin` / `admin`
 
 ## Structure du code
 
 ```
 src/
 ├── config/apiConfig.js
-├── services/clientsService.js
+├── context/AuthContext.jsx
+├── services/
 ├── components/
-│   ├── clients/     ClientTable, ClientForm, ClientDetailsDisplay
-│   ├── common/      Loading, ErrorMessage
-│   └── layout/      Layout, Navbar
-└── pages/clients/   Pages CRUD
+│   ├── clients/
+│   ├── voitures/
+│   ├── comptes/
+│   ├── common/
+│   └── layout/
+└── pages/
 ```
-
-## Modules non couverts (Phase B)
-
-Voitures et Comptes ne sont pas implémentés en React : aucune API REST n'existe pour ces modules dans le backend actuel.
