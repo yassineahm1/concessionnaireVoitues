@@ -1,6 +1,6 @@
 # Frontend React — concessionnaireVoituesGrA
 
-Interface React (Vite) pour le module **Clients**, connectée à l'API REST `ClientsAPI` du backend ASP.NET Core.
+Interface React (Vite) pour les modules **Clients** et **Voitures**, connectée aux API REST du backend ASP.NET Core.
 
 ## Prérequis
 
@@ -40,7 +40,9 @@ npm run build
 npm run preview
 ```
 
-## Routes (module Clients)
+## Routes
+
+### Clients
 
 | Route | Écran MVC équivalent |
 |-------|----------------------|
@@ -50,15 +52,20 @@ npm run preview
 | `/clients/:cine/edit` | Clients/Edit |
 | `/clients/:cine/delete` | Clients/Delete |
 
+### Voitures
+
+| Route | Écran MVC équivalent |
+|-------|----------------------|
+| `/voitures` | Voitures/Index |
+| `/voitures/new` | Voitures/Create |
+| `/voitures/:matricule` | Voitures/Details |
+| `/voitures/:matricule/edit` | Voitures/Edit |
+| `/voitures/:matricule/delete` | Voitures/Delete |
+
 ## API utilisée
 
-Base : `{VITE_API_BASE_URL}/api/ClientsAPI`
-
-- `GET /` — liste
-- `GET /{cine}` — détail
-- `POST /` — création
-- `PUT /{cine}` — modification
-- `DELETE /{cine}` — suppression
+- `{VITE_API_BASE_URL}/api/ClientsAPI` — CRUD clients
+- `{VITE_API_BASE_URL}/api/VoituresAPI` — CRUD voitures (POST retourne 400 si matricule dupliqué)
 
 ## Structure du code
 
@@ -68,11 +75,12 @@ src/
 ├── services/clientsService.js
 ├── components/
 │   ├── clients/     ClientTable, ClientForm, ClientDetailsDisplay
+│   ├── voitures/    VoitureTable, VoitureForm, VoitureDetailsDisplay
 │   ├── common/      Loading, ErrorMessage
 │   └── layout/      Layout, Navbar
 └── pages/clients/   Pages CRUD
 ```
 
-## Modules non couverts (Phase B)
+## Modules non couverts (Phase B2)
 
-Voitures et Comptes ne sont pas implémentés en React : aucune API REST n'existe pour ces modules dans le backend actuel.
+Comptes (auth, inscription) : aucune API REST pour l'instant.

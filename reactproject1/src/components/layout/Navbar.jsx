@@ -1,8 +1,8 @@
 import { NavLink } from 'react-router-dom'
 
 /**
- * Barre de navigation — Phase A : uniquement le module Clients (API REST disponible).
- * Voitures et Comptes ne sont pas affichés tant qu'il n'existe pas d'API REST.
+ * Barre de navigation — Clients et Voitures (API REST disponibles).
+ * Comptes : Phase B2 (pas d'API REST pour l'instant).
  */
 function Navbar() {
   return (
@@ -15,6 +15,14 @@ function Navbar() {
             className={({ isActive }) => (isActive ? 'app-nav-link active' : 'app-nav-link')}
           >
             Clients
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/voitures"
+            className={({ isActive }) => (isActive ? 'app-nav-link active' : 'app-nav-link')}
+          >
+            Voitures
           </NavLink>
         </li>
       </ul>
