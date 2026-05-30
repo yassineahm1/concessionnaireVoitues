@@ -1,9 +1,13 @@
 import { Link } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 
 /**
  * Tableau des voitures — aligné sur Views/Voitures/Index.cshtml.
  */
 function VoitureTable({ voitures }) {
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'Admin'
+
   if (!voitures || voitures.length === 0) {
     return <p className="app-message">Aucune voiture.</p>
   }
@@ -29,11 +33,19 @@ function VoitureTable({ voitures }) {
             <td>{voiture.annee}</td>
             <td>{voiture.prixLocation}</td>
             <td className="app-table-actions">
-              <Link to={`/voitures/${encodeURIComponent(voiture.matricule)}/edit`}>Edit</Link>
-              {' | '}
+              {isAdmin && (
+                <>
+                  <Link to={`/voitures/${encodeURIComponent(voiture.matricule)}/edit`}>Edit</Link>
+                  {' | '}
+                </>
+              )}
               <Link to={`/voitures/${encodeURIComponent(voiture.matricule)}`}>Details</Link>
-              {' | '}
-              <Link to={`/voitures/${encodeURIComponent(voiture.matricule)}/delete`}>Delete</Link>
+              {isAdmin && (
+                <>
+                  {' | '}
+                  <Link to={`/voitures/${encodeURIComponent(voiture.matricule)}/delete`}>Delete</Link>
+                </>
+              )}
             </td>
           </tr>
         ))}

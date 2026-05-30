@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import ErrorMessage from '../../components/common/ErrorMessage'
 import { useAuth } from '../../context/AuthContext'
-import { authentifier } from '../../services/comptesService'
+import { authentifier, getStatut } from '../../services/comptesService'
 
 /**
  * Connexion — équivalent de Comptes/Authentifier (MVC).
@@ -21,7 +21,18 @@ function CompteSignInPage() {
     setError(null)
     try {
       await authentifier({ username, password })
-      login(username)
+      let hasProfile = false
+      if (username !== 'Admin') {
+        try {
+          const status = await getStatut()
+          hasProfile = status.hasProfile
+        } catch {
+          // ignorer
+        }
+      } else {
+        hasProfile = true
+      }
+      login(username, hasProfile)
       navigate('/clients')
     } catch (err) {
       setError(err.message ?? 'Invalid username or password.')

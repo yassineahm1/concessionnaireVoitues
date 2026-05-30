@@ -30,5 +30,15 @@ namespace concessionnaireVoituesGrA.Services
         {
             throw new NotImplementedException();
         }
+
+        public int? GetIdClient(string username)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void LierClient(string username, int idClient)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

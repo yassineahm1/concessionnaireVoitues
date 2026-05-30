@@ -52,3 +52,18 @@ export async function getComptes() {
   const response = await fetch(comptesApiUrl, fetchOptions)
   return handleResponse(response)
 }
+
+export async function getStatut() {
+  const response = await fetch(`${comptesApiUrl}/statut`, fetchOptions)
+  return handleResponse(response)
+}
+
+export async function lierClient(clientDto) {
+  const response = await fetch(`${comptesApiUrl}/lier`, {
+    ...fetchOptions,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(clientDto),
+  })
+  return handleResponse(response)
+}

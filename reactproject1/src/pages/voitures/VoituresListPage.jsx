@@ -4,11 +4,14 @@ import VoitureTable from '../../components/voitures/VoitureTable'
 import Loading from '../../components/common/Loading'
 import ErrorMessage from '../../components/common/ErrorMessage'
 import { getAllVoitures } from '../../services/voituresService'
+import { useAuth } from '../../context/AuthContext'
 
 /**
  * Liste des voitures — équivalent de Voitures/Index (MVC).
  */
 function VoituresListPage() {
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'Admin'
   const [voitures, setVoitures] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -46,9 +49,11 @@ function VoituresListPage() {
     <section>
       <h1>Index</h1>
 
-      <p>
-        <Link to="/voitures/new">Create New</Link>
-      </p>
+      {isAdmin && (
+        <p>
+          <Link to="/voitures/new">Create New</Link>
+        </p>
+      )}
 
       {loading && <Loading />}
       <ErrorMessage message={error} />

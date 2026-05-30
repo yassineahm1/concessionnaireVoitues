@@ -1,4 +1,5 @@
 import { createContext, useContext, useMemo, useState } from 'react'
+import { getStatut } from '../services/comptesService'
 
 const AuthContext = createContext(null)
 
@@ -23,9 +24,9 @@ export function AuthProvider({ children }) {
     () => ({
       user,
       isAuthenticated: Boolean(user),
-      login(username) {
+      login(username, hasProfile = false) {
         const role = username === 'Admin' ? 'Admin' : 'Client'
-        const next = { username, role }
+        const next = { username, role, hasProfile: role === 'Admin' ? true : hasProfile }
         sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next))
         setUser(next)
       },
@@ -33,6 +34,23 @@ export function AuthProvider({ children }) {
         sessionStorage.removeItem(STORAGE_KEY)
         setUser(null)
       },
+      async checkProfileStatus() {
+        if (!user || user.role !== 'Client') return
+        try {
+          const status = await getStatut()
+          const next = { ...user, hasProfile: status.hasProfile }
+          sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+          setUser(next)
+        } catch {
+          // ignorer en cas d'erreur
+        }
+      },
+      setHasProfile(val) {
+        if (!user) return
+        const next = { ...user, hasProfile: val }
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+        setUser(next)
+      }
     }),
     [user],
   )

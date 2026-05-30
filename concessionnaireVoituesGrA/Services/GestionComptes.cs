@@ -1,6 +1,7 @@
 using concessionnaireVoituesGrA.Data;
 using concessionnaireVoituesGrA.Domains;
 using concessionnaireVoituesGrA.Models;
+using concessionnaireVoituesGrA.Entities;
 
 namespace concessionnaireVoituesGrA.Services
 {
@@ -48,6 +49,17 @@ namespace concessionnaireVoituesGrA.Services
         public CompteDto Rechercher(string username)
         {
             throw new NotImplementedException();
+        }
+
+        public int? GetIdClient(string username)
+        {
+            CompteEntity entity = dao.GetCompteEntity(username);
+            return entity?.IdClient;
+        }
+
+        public void LierClient(string username, int idClient)
+        {
+            dao.UpdateIdClient(username, idClient);
         }
     }
 }

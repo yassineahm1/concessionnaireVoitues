@@ -10,5 +10,7 @@ namespace concessionnaireVoituesGrA.Services
         bool Authentifier(CompteDto compte);
         CompteDto Rechercher(string username);
         List<CompteDto> GetComptes();
+        int? GetIdClient(string username);
+        void LierClient(string username, int idClient);
     }
 }

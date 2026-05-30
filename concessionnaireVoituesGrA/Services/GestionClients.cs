@@ -1,4 +1,4 @@
-﻿using concessionnaireVoituesGrA.Data;
+using concessionnaireVoituesGrA.Data;
 using concessionnaireVoituesGrA.Domains;
 using concessionnaireVoituesGrA.Models;
 
@@ -16,6 +16,12 @@ namespace concessionnaireVoituesGrA.Services
             Client client = new Client();
            AutoMapping<ClientDto, Client>.Map(clientDto, client);
             dao.Ajouter(client);
+        }
+        public int AjouterEtRetournerId(ClientDto clientDto)
+        {
+            Client client = new Client();
+            AutoMapping<ClientDto, Client>.Map(clientDto, client);
+            return dao.AjouterEtRetournerId(client);
         }
 
         public List<ClientDto> GetAllClients()
@@ -55,6 +61,18 @@ namespace concessionnaireVoituesGrA.Services
         {
            
             return dao.Supprimer(cine);
+        }
+        public int? GetClientIdByCine(string cine)
+        {
+            return dao.GetClientIdByCine(cine);
+        }
+        public ClientDto GetClientById(int id)
+        {
+            Client client = dao.GetClientById(id);
+            if (client == null) return null;
+            ClientDto clientDto = new ClientDto();
+            AutoMapping<Client, ClientDto>.Map(client, clientDto);
+            return clientDto;
         }
     }
 }

@@ -51,3 +51,10 @@ export async function deleteClient(cine) {
   })
   return handleResponse(response)
 }
+
+export async function getMonProfil() {
+  const response = await fetch(`${clientsApiUrl}/mon-profil`, {
+    credentials: 'include',
+  })
+  return handleResponse(response)
+}

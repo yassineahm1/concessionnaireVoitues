@@ -1,4 +1,4 @@
-﻿using concessionnaireVoituesGrA.Models;
+using concessionnaireVoituesGrA.Models;
 using concessionnaireVoituesGrA.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +20,28 @@ namespace concessionnaireVoituesGrA.Controllers
         public IActionResult Get()
         {
             return Ok(service.GetAllClients());
+        }
+
+        [HttpGet("mon-profil")]
+        [Microsoft.AspNetCore.Authorization.Authorize]
+        public IActionResult MonProfil([FromServices] InterfaceComptes comptesService)
+        {
+            var username = User.Identity?.Name;
+            if (string.IsNullOrEmpty(username))
+            {
+                return Unauthorized();
+            }
+            var idClient = comptesService.GetIdClient(username);
+            if (!idClient.HasValue || idClient.Value <= 0)
+            {
+                return NotFound("No profile linked to this account.");
+            }
+            var client = service.GetClientById(idClient.Value);
+            if (client == null)
+            {
+                return NotFound("Client profile not found.");
+            }
+            return Ok(client);
         }
 
         // GET api/<ClientsAPIController>/5
