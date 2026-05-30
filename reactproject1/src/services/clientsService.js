@@ -58,3 +58,13 @@ export async function getMonProfil() {
   })
   return handleResponse(response)
 }
+
+export async function updateMonProfil(clientDto) {
+  const response = await fetch(`${clientsApiUrl}/mon-profil`, {
+    method: 'PUT',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(clientDto),
+  })
+  return handleResponse(response)
+}

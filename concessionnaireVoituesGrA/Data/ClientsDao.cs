@@ -76,14 +76,37 @@ namespace concessionnaireVoituesGrA.Data
 
         public bool Modifier(string cine, Client client)
         {
-            ClientEntity clientEntity = new ClientEntity();
-            AutoMapping<Client, ClientEntity>.Map(client, clientEntity);
-            // Code pour modifier les informations d'un client dans la base de données
             connection.Open();
-            string sql= @$"UPDATE Clients SET CINE=@CINE, Nom = @Nom, Prenom = @Prenom, Tel = @Tel, Adresse = @Adresse WHERE CINE = '{cine}'";
-            connection.Execute(sql, clientEntity);
+            string sql = @"UPDATE Clients SET CINE=@CINE, Nom=@Nom, Prenom=@Prenom, Tel=@Tel, Adresse=@Adresse 
+                           WHERE CINE=@OldCine";
+            connection.Execute(sql, new
+            {
+                OldCine = cine,
+                client.CINE,
+                client.Nom,
+                client.Prenom,
+                client.Tel,
+                client.Adresse
+            });
             connection.Close();
-            return true; // Retourne true si la modification a réussi, sinon false
+            return true;
+        }
+
+        public bool ModifierById(int id, Client client)
+        {
+            connection.Open();
+            string sql = @"UPDATE Clients SET Nom=@Nom, Prenom=@Prenom, Tel=@Tel, Adresse=@Adresse 
+                           WHERE Id=@Id";
+            int rows = connection.Execute(sql, new
+            {
+                Id = id,
+                client.Nom,
+                client.Prenom,
+                client.Tel,
+                client.Adresse
+            });
+            connection.Close();
+            return rows > 0;
         }
         public bool Supprimer(string cine)
         {

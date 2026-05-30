@@ -54,7 +54,11 @@ namespace concessionnaireVoituesGrA.Services
         public int? GetIdClient(string username)
         {
             CompteEntity entity = dao.GetCompteEntity(username);
-            return entity?.IdClient;
+            if (entity == null || entity.IdClient <= 0)
+            {
+                return null;
+            }
+            return entity.IdClient;
         }
 
         public void LierClient(string username, int idClient)

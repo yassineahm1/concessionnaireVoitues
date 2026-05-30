@@ -4,7 +4,7 @@ import ClientDetailsDisplay from '../../components/clients/ClientDetailsDisplay'
 import ClientForm from '../../components/clients/ClientForm'
 import Loading from '../../components/common/Loading'
 import ErrorMessage from '../../components/common/ErrorMessage'
-import { getMonProfil, updateClient } from '../../services/clientsService'
+import { getMonProfil, updateMonProfil } from '../../services/clientsService'
 import { lierClient } from '../../services/comptesService'
 
 /**
@@ -56,7 +56,8 @@ function ClientProfilePage() {
     try {
       await lierClient(clientDto)
       setHasProfile(true)
-      setClient(clientDto)
+      const saved = await getMonProfil()
+      setClient(saved)
     } catch (err) {
       setError(err.message ?? 'Une erreur est survenue lors de la création du profil.')
       throw err
@@ -66,8 +67,14 @@ function ClientProfilePage() {
   async function handleUpdateProfile(clientDto) {
     setError(null)
     try {
-      await updateClient(client.cine, clientDto)
-      setClient(clientDto)
+      const saved = await updateMonProfil({
+        cine: client.cine,
+        nom: clientDto.nom,
+        prenom: clientDto.prenom,
+        tel: clientDto.tel,
+        adresse: clientDto.adresse,
+      })
+      setClient(saved)
       setIsEditing(false)
     } catch (err) {
       setError(err.message ?? 'Une erreur est survenue lors de la mise à jour.')

@@ -55,6 +55,7 @@ namespace concessionnaireVoituesGrA.Controllers
             if (existingId.HasValue)
             {
                 clientId = existingId.Value;
+                clientsService.Modifier(model.CINE, model);
             }
             else
             {

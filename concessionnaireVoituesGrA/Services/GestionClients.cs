@@ -57,6 +57,13 @@ namespace concessionnaireVoituesGrA.Services
             return dao.Modifier(cine, client);
         }
 
+        public bool ModifierById(int id, ClientDto clientDto)
+        {
+            Client client = new Client();
+            AutoMapping<ClientDto, Client>.Map(clientDto, client);
+            return dao.ModifierById(id, client);
+        }
+
         public bool Supprimer(string cine)
         {
            

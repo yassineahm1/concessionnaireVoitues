@@ -1,5 +1,6 @@
 using concessionnaireVoituesGrA.Models;
 using concessionnaireVoituesGrA.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -22,8 +23,30 @@ namespace concessionnaireVoituesGrA.Controllers
             return Ok(service.GetAllClients());
         }
 
+        [HttpPut("mon-profil")]
+        [Authorize]
+        public IActionResult PutMonProfil(ClientDto model, [FromServices] InterfaceComptes comptesService)
+        {
+            var username = User.Identity?.Name;
+            if (string.IsNullOrEmpty(username))
+            {
+                return Unauthorized();
+            }
+            var idClient = comptesService.GetIdClient(username);
+            if (!idClient.HasValue || idClient.Value <= 0)
+            {
+                return BadRequest("No profile linked to this account.");
+            }
+            if (!service.ModifierById(idClient.Value, model))
+            {
+                return BadRequest("Profile update failed.");
+            }
+            var updated = service.GetClientById(idClient.Value);
+            return Ok(updated);
+        }
+
         [HttpGet("mon-profil")]
-        [Microsoft.AspNetCore.Authorization.Authorize]
+        [Authorize]
         public IActionResult MonProfil([FromServices] InterfaceComptes comptesService)
         {
             var username = User.Identity?.Name;
