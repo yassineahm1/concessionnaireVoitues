@@ -24,6 +24,11 @@ export function AuthProvider({ children }) {
     () => ({
       user,
       isAuthenticated: Boolean(user),
+      isAdmin: user?.role === 'Admin',
+      isClient: user?.role === 'Client',
+      getHomePath() {
+        return user?.role === 'Admin' ? '/clients' : '/voitures';
+      },
       login(username, hasProfile = false) {
         const role = username === 'Admin' ? 'Admin' : 'Client'
         const next = { username, role, hasProfile: role === 'Admin' ? true : hasProfile }

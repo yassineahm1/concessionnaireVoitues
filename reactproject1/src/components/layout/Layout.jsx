@@ -1,10 +1,9 @@
-import { Outlet } from 'react-router-dom'
-import Navbar from './Navbar'
+import { Outlet } from 'react-router-dom';
+import Navbar from './Navbar';
 
-/**
- * Enveloppe commune : navbar + contenu de la route active (Outlet).
- */
 function Layout() {
+  const year = new Date().getFullYear();
+
   return (
     <div className="app-layout">
       <header>
@@ -14,10 +13,15 @@ function Layout() {
         <Outlet />
       </main>
       <footer className="app-footer">
-        <span>&copy; 2026 - concessionnaireVoituesGrA</span>
+        <div className="app-footer-inner">
+          <span>
+            &copy; {year} Concessionnaire Voitures GrA
+          </span>
+          <span>Excellence automobile · Location & gestion</span>
+        </div>
       </footer>
     </div>
-  )
+  );
 }
 
-export default Layout
+export default Layout;

@@ -29,11 +29,11 @@ function ClientTable({ clients }) {
             <td>{client.tel}</td>
             <td>{client.adresse}</td>
             <td className="app-table-actions">
-              <Link to={`/clients/${encodeURIComponent(client.cine)}/edit`}>Edit</Link>
-              {' | '}
-              <Link to={`/clients/${encodeURIComponent(client.cine)}`}>Details</Link>
-              {' | '}
-              <Link to={`/clients/${encodeURIComponent(client.cine)}/delete`}>Delete</Link>
+              <Link to={`/clients/${encodeURIComponent(client.cine)}/edit`}>Modifier</Link>
+              {' · '}
+              <Link to={`/clients/${encodeURIComponent(client.cine)}`}>Détails</Link>
+              {' · '}
+              <Link to={`/clients/${encodeURIComponent(client.cine)}/delete`}>Supprimer</Link>
             </td>
           </tr>
         ))}
