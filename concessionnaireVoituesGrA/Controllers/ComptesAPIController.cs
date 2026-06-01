@@ -12,10 +12,12 @@ namespace concessionnaireVoituesGrA.Controllers
     public class ComptesAPIController : ControllerBase
     {
         InterfaceComptes service;
+        InterfaceClients clientsService;
 
-        public ComptesAPIController(InterfaceComptes service)
+        public ComptesAPIController(InterfaceComptes service, InterfaceClients clientsService)
         {
             this.service = service;
+            this.clientsService = clientsService;
         }
 
         [HttpGet]
@@ -23,6 +25,45 @@ namespace concessionnaireVoituesGrA.Controllers
         public IActionResult Get()
         {
             return Ok(service.GetComptes());
+        }
+
+        [HttpGet("statut")]
+        [Authorize]
+        public IActionResult GetStatut()
+        {
+            var username = User.Identity?.Name;
+            if (string.IsNullOrEmpty(username))
+            {
+                return Unauthorized();
+            }
+            var idClient = service.GetIdClient(username);
+            return Ok(new { hasProfile = idClient.HasValue && idClient.Value > 0, username = username });
+        }
+
+        [HttpPost("lier")]
+        [Authorize]
+        public IActionResult Lier(ClientDto model)
+        {
+            var username = User.Identity?.Name;
+            if (string.IsNullOrEmpty(username))
+            {
+                return Unauthorized();
+            }
+
+            int clientId;
+            var existingId = clientsService.GetClientIdByCine(model.CINE);
+            if (existingId.HasValue)
+            {
+                clientId = existingId.Value;
+                clientsService.Modifier(model.CINE, model);
+            }
+            else
+            {
+                clientId = clientsService.AjouterEtRetournerId(model);
+            }
+
+            service.LierClient(username, clientId);
+            return Ok(new { hasProfile = true, username = username });
         }
 
         [HttpPost("authentifier")]

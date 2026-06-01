@@ -1,4 +1,4 @@
-﻿using concessionnaireVoituesGrA.Domains;
+using concessionnaireVoituesGrA.Domains;
 using concessionnaireVoituesGrA.Entities;
 using concessionnaireVoituesGrA.Services;
 using Dapper;
@@ -28,6 +28,18 @@ namespace concessionnaireVoituesGrA.Data
             string sql = @$"INSERT INTO Clients (CINE, Nom, Prenom, Tel, Adresse) VALUES (@CINE, @Nom, @Prenom, @Tel, @Adresse)";
             connection.Execute(sql, clientEntity);
             connection.Close();     
+        }
+        public int AjouterEtRetournerId(Client client)
+        {
+            ClientEntity clientEntity = new ClientEntity();
+            AutoMapping<Client, ClientEntity>.Map(client, clientEntity);
+            connection.Open();
+            string sql = @"INSERT INTO Clients (CINE, Nom, Prenom, Tel, Adresse) 
+                           VALUES (@CINE, @Nom, @Prenom, @Tel, @Adresse);
+                           SELECT CAST(SCOPE_IDENTITY() as int);";
+            int insertedId = connection.ExecuteScalar<int>(sql, clientEntity);
+            connection.Close();
+            return insertedId;
         }
         public Client GetClient(string cine)
         {
@@ -64,14 +76,37 @@ namespace concessionnaireVoituesGrA.Data
 
         public bool Modifier(string cine, Client client)
         {
-            ClientEntity clientEntity = new ClientEntity();
-            AutoMapping<Client, ClientEntity>.Map(client, clientEntity);
-            // Code pour modifier les informations d'un client dans la base de données
             connection.Open();
-            string sql= @$"UPDATE Clients SET CINE=@CINE, Nom = @Nom, Prenom = @Prenom, Tel = @Tel, Adresse = @Adresse WHERE CINE = '{cine}'";
-            connection.Execute(sql, clientEntity);
+            string sql = @"UPDATE Clients SET CINE=@CINE, Nom=@Nom, Prenom=@Prenom, Tel=@Tel, Adresse=@Adresse 
+                           WHERE CINE=@OldCine";
+            connection.Execute(sql, new
+            {
+                OldCine = cine,
+                client.CINE,
+                client.Nom,
+                client.Prenom,
+                client.Tel,
+                client.Adresse
+            });
             connection.Close();
-            return true; // Retourne true si la modification a réussi, sinon false
+            return true;
+        }
+
+        public bool ModifierById(int id, Client client)
+        {
+            connection.Open();
+            string sql = @"UPDATE Clients SET Nom=@Nom, Prenom=@Prenom, Tel=@Tel, Adresse=@Adresse 
+                           WHERE Id=@Id";
+            int rows = connection.Execute(sql, new
+            {
+                Id = id,
+                client.Nom,
+                client.Prenom,
+                client.Tel,
+                client.Adresse
+            });
+            connection.Close();
+            return rows > 0;
         }
         public bool Supprimer(string cine)
         {
@@ -82,6 +117,25 @@ namespace concessionnaireVoituesGrA.Data
             connection.Close();
             return true; // Retourne true si la suppression a réussi, sinon false
         }
-       
+        public int? GetClientIdByCine(string cine)
+        {
+            connection.Open();
+            string sql = "SELECT Id FROM Clients WHERE CINE = @CINE";
+            int? id = connection.QuerySingleOrDefault<int?>(sql, new { CINE = cine });
+            connection.Close();
+            return id;
+        }
+        public Client GetClientById(int id)
+        {
+            connection.Open();
+            string sql = "SELECT * FROM Clients WHERE Id = @Id";
+            ClientEntity clientEntity = connection.QuerySingleOrDefault<ClientEntity>(sql, new { Id = id });
+            connection.Close();
+            if (clientEntity == null)
+                return null;
+            Client client = new Client();
+            AutoMapping<ClientEntity, Client>.Map(clientEntity, client);
+            return client;
+        }
     }
 }

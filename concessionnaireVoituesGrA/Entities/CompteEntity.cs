@@ -1,4 +1,4 @@
-﻿using concessionnaireVoituesGrA.Domains;
+using concessionnaireVoituesGrA.Domains;
 
 namespace concessionnaireVoituesGrA.Entities
 {
@@ -8,6 +8,6 @@ namespace concessionnaireVoituesGrA.Entities
         public string Username { get; set; }
         public string Password { get; set; }
         public string Role { get; set; }
-        public int  IdClient { get; set; }
+        public int? IdClient { get; set; }
     }
 }

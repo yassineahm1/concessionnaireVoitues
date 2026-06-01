@@ -17,11 +17,13 @@ namespace concessionnaireVoituesGrA
             builder.Services.AddScoped<ClientsDao>();
             
             builder.Services.AddScoped<ComptesDao>();
+            builder.Services.AddScoped<LocationsDao>();
 
             builder.Services.AddScoped<InterfaceClients, GestionClients>();
             builder.Services.AddScoped<InterfaceVoitures, GestionVoitures>();
 
             builder.Services.AddScoped<InterfaceComptes, GestionComptes>();
+            builder.Services.AddScoped<InterfaceLocations, GestionLocations>();
 
             builder.Services.AddAuthentication("Cookies").AddCookie(options =>
             {

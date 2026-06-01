@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import ErrorMessage from '../common/ErrorMessage'
 
 const emptyForm = {
   cine: '',
@@ -55,7 +56,7 @@ function ClientForm({ defaultValues, onSubmit, submitLabel, cineReadOnly = false
 
   return (
     <form className="app-form" onSubmit={handleSubmit}>
-      {error && <p className="app-error">{error}</p>}
+      <ErrorMessage message={error} />
 
       <div className="app-form-group">
         <label htmlFor="cine">CINE</label>
