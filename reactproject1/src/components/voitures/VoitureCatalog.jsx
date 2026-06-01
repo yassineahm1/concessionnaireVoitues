@@ -11,7 +11,7 @@ function formatPrice(value) {
   }).format(n);
 }
 
-export default function VoitureCatalog({ voitures, showAdminActions = false }) {
+export default function VoitureCatalog({ voitures, showAdminActions = false, showReserveLink = false }) {
   const [sortBy, setSortBy] = useState('marque-asc');
   const [filterMarque, setFilterMarque] = useState('');
 
@@ -89,6 +89,9 @@ export default function VoitureCatalog({ voitures, showAdminActions = false }) {
               <p className="catalog-meta">Matricule · {v.matricule}</p>
               <div className="catalog-card-actions">
                 <Link to={`/voitures/${encodeURIComponent(v.matricule)}`}>Voir la fiche</Link>
+                {showReserveLink && (
+                  <Link to={`/voitures/${encodeURIComponent(v.matricule)}/reserver`}>Réserver</Link>
+                )}
                 {showAdminActions && (
                   <>
                     <Link to={`/voitures/${encodeURIComponent(v.matricule)}/edit`}>Modifier</Link>

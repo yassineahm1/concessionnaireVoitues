@@ -82,7 +82,11 @@ function VoituresListPage() {
 
       {!loading && !error && (
         <>
-          <VoitureCatalog voitures={voitures} showAdminActions={isAdmin} />
+          <VoitureCatalog
+            voitures={voitures}
+            showAdminActions={isAdmin}
+            showReserveLink={isClient && user?.hasProfile !== false}
+          />
 
           {isAdmin && voitures.length > 0 && (
             <>

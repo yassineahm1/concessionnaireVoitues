@@ -60,6 +60,16 @@ function Navbar() {
         {isClient && (
           <li>
             <NavLink
+              to="/mes-reservations"
+              className={({ isActive }) => (isActive ? 'app-nav-link active' : 'app-nav-link')}
+            >
+              Mes réservations
+            </NavLink>
+          </li>
+        )}
+        {isClient && (
+          <li>
+            <NavLink
               to="/profil"
               className={({ isActive }) =>
                 isActive
@@ -68,6 +78,16 @@ function Navbar() {
               }
             >
               {profilAlert ? 'Créer mon profil' : 'Mon profil'}
+            </NavLink>
+          </li>
+        )}
+        {isAdmin && (
+          <li>
+            <NavLink
+              to="/locations"
+              className={({ isActive }) => (isActive ? 'app-nav-link active' : 'app-nav-link')}
+            >
+              Réservations
             </NavLink>
           </li>
         )}

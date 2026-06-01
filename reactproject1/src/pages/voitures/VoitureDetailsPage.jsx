@@ -21,6 +21,8 @@ function VoitureDetailsPage() {
   const { matricule } = useParams();
   const { user } = useAuth();
   const isAdmin = user?.role === 'Admin';
+  const isClient = user?.role === 'Client';
+  const canReserve = isClient && user?.hasProfile !== false;
   const [voiture, setVoiture] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -111,6 +113,19 @@ function VoitureDetailsPage() {
           </div>
 
           <div className="app-actions">
+            {canReserve && (
+              <Link
+                to={`/voitures/${encodeURIComponent(voiture.matricule)}/reserver`}
+                className="app-btn app-btn-primary"
+              >
+                Réserver ce véhicule
+              </Link>
+            )}
+            {isClient && user?.hasProfile === false && (
+              <Link to="/profil" className="app-btn app-btn-primary">
+                Créer mon profil pour réserver
+              </Link>
+            )}
             {isAdmin && (
               <Link to={`/voitures/${encodeURIComponent(voiture.matricule)}/edit`} className="app-btn app-btn-primary">
                 Modifier
