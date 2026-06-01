@@ -1,5 +1,6 @@
 using concessionnaireVoituesGrA.Data;
 using concessionnaireVoituesGrA.Services;
+using QuestPDF.Infrastructure;
 
 namespace concessionnaireVoituesGrA
 {
@@ -24,6 +25,10 @@ namespace concessionnaireVoituesGrA
 
             builder.Services.AddScoped<InterfaceComptes, GestionComptes>();
             builder.Services.AddScoped<InterfaceLocations, GestionLocations>();
+            builder.Services.AddScoped<FacturePdfService>();
+
+            // Licence QuestPDF (Community — open-source / usage non commercial)
+            QuestPDF.Settings.License = LicenseType.Community;
 
             builder.Services.AddAuthentication("Cookies").AddCookie(options =>
             {

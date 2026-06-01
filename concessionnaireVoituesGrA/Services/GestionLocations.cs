@@ -1,4 +1,5 @@
 using concessionnaireVoituesGrA.Data;
+using concessionnaireVoituesGrA.Domains;
 using concessionnaireVoituesGrA.Entities;
 using concessionnaireVoituesGrA.Models;
 
@@ -32,42 +33,32 @@ namespace concessionnaireVoituesGrA.Services
         public LocationDto? CreerReservation(int idClient, LocationCreateDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Matricule) || dto.NombreJours < 1)
-            {
                 return null;
-            }
 
             if (!DateTime.TryParse(dto.DateDebut, out DateTime dateDebut))
-            {
                 return null;
-            }
 
             dateDebut = dateDebut.Date;
             if (dateDebut < DateTime.Today)
-            {
                 return null;
-            }
 
             var voiture = voituresDao.GetVoiture(dto.Matricule);
             if (voiture == null)
-            {
                 return null;
-            }
 
             DateTime dateFin = dateDebut.AddDays(dto.NombreJours - 1);
             if (locationsDao.ExisteChevauchement(dto.Matricule, dateDebut, dateFin))
-            {
                 return null;
-            }
 
             double prixTotal = dto.NombreJours * voiture.PrixLocation;
             var entity = new LocationEntity
             {
-                IdClient = idClient,
-                Matricule = dto.Matricule,
-                DateDebut = dateDebut,
-                DateFin = dateFin,
+                IdClient    = idClient,
+                Matricule   = dto.Matricule,
+                DateDebut   = dateDebut,
+                DateFin     = dateFin,
                 NombreJours = dto.NombreJours,
-                PrixTotal = prixTotal
+                PrixTotal   = prixTotal
             };
 
             int id = locationsDao.Ajouter(entity);
@@ -78,33 +69,71 @@ namespace concessionnaireVoituesGrA.Services
         public bool Annuler(int id, int? idClientRestrict)
         {
             var entity = locationsDao.GetById(id);
-            if (entity == null)
-            {
-                return false;
-            }
+            if (entity == null) return false;
 
             if (idClientRestrict.HasValue && entity.IdClient != idClientRestrict.Value)
-            {
                 return false;
-            }
 
             return locationsDao.Supprimer(id);
         }
+
+        /// <summary>
+        /// Construit la Facture complète (client + véhicule + période + prix) pour le PDF.
+        /// </summary>
+        public Facture? GetFacture(int id)
+        {
+            var entity = locationsDao.GetById(id);
+            if (entity == null) return null;
+
+            var voiture = voituresDao.GetVoiture(entity.Matricule);
+            var client  = clientsDao.GetClientById(entity.IdClient);
+
+            return new Facture
+            {
+                IdLocation   = entity.Id,
+                IdClient     = entity.IdClient,
+                DateCreation = entity.DateCreation,
+
+                // Client
+                ClientNom     = client?.Nom     ?? "",
+                ClientPrenom  = client?.Prenom  ?? "",
+                ClientCINE    = client?.CINE    ?? "",
+                ClientTel     = client?.Tel     ?? "",
+                ClientAdresse = client?.Adresse ?? "",
+
+                // Véhicule
+                Matricule   = entity.Matricule,
+                Marque      = voiture?.Marque      ?? "",
+                Modele      = voiture?.Modele      ?? "",
+                Annee       = voiture?.Annee       ?? 0,
+                PrixParJour = voiture?.PrixLocation ?? 0,
+
+                // Période
+                DateDebut   = entity.DateDebut,
+                DateFin     = entity.DateFin,
+                NombreJours = entity.NombreJours,
+
+                // Prix en MAD
+                PrixTotal   = entity.PrixTotal
+            };
+        }
+
+        // ─── Mapping interne ──────────────────────────────────────────────────
 
         private LocationDto ToDto(LocationEntity entity, bool includeClient)
         {
             var voiture = voituresDao.GetVoiture(entity.Matricule);
             var dto = new LocationDto
             {
-                Id = entity.Id,
-                IdClient = entity.IdClient,
-                Matricule = entity.Matricule,
-                Marque = voiture?.Marque ?? "",
-                Modele = voiture?.Modele ?? "",
-                DateDebut = entity.DateDebut.ToString("yyyy-MM-dd"),
-                DateFin = entity.DateFin.ToString("yyyy-MM-dd"),
+                Id          = entity.Id,
+                IdClient    = entity.IdClient,
+                Matricule   = entity.Matricule,
+                Marque      = voiture?.Marque ?? "",
+                Modele      = voiture?.Modele ?? "",
+                DateDebut   = entity.DateDebut.ToString("yyyy-MM-dd"),
+                DateFin     = entity.DateFin.ToString("yyyy-MM-dd"),
                 NombreJours = entity.NombreJours,
-                PrixTotal = entity.PrixTotal
+                PrixTotal   = entity.PrixTotal
             };
 
             if (includeClient)
@@ -112,7 +141,7 @@ namespace concessionnaireVoituesGrA.Services
                 var client = clientsDao.GetClientById(entity.IdClient);
                 if (client != null)
                 {
-                    dto.ClientNom = client.Nom;
+                    dto.ClientNom    = client.Nom;
                     dto.ClientPrenom = client.Prenom;
                 }
             }

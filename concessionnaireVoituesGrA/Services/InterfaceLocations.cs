@@ -1,3 +1,4 @@
+using concessionnaireVoituesGrA.Domains;
 using concessionnaireVoituesGrA.Models;
 
 namespace concessionnaireVoituesGrA.Services
@@ -8,5 +9,7 @@ namespace concessionnaireVoituesGrA.Services
         List<LocationDto> GetAllLocations();
         LocationDto? CreerReservation(int idClient, LocationCreateDto dto);
         bool Annuler(int id, int? idClientRestrict);
+        Facture? GetFacture(int id);
     }
 }
+

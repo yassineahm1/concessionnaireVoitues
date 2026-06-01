@@ -1,23 +1,39 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { downloadFacture } from '../../services/locationsService';
 
 function formatPrice(value) {
   const n = Number(value);
   if (Number.isNaN(n)) return value;
-  return new Intl.NumberFormat('fr-CA', {
+  return new Intl.NumberFormat('fr-MA', {
     style: 'currency',
-    currency: 'CAD',
-    maximumFractionDigits: 0,
+    currency: 'MAD',
+    maximumFractionDigits: 2,
   }).format(n);
 }
 
 function formatDate(iso) {
   if (!iso) return '—';
   const d = new Date(iso + 'T12:00:00');
-  return d.toLocaleDateString('fr-CA', { day: 'numeric', month: 'long', year: 'numeric' });
+  return d.toLocaleDateString('fr-MA', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
 export default function LocationCard({ location, onCancel, showClient = false, cancelling = false }) {
   const isPast = new Date(location.dateFin + 'T23:59:59') < new Date();
+  const [downloading, setDownloading] = useState(false);
+  const [dlError, setDlError] = useState(null);
+
+  async function handleDownloadFacture() {
+    setDownloading(true);
+    setDlError(null);
+    try {
+      await downloadFacture(location.id);
+    } catch (err) {
+      setDlError(err.message ?? 'Impossible de télécharger la facture.');
+    } finally {
+      setDownloading(false);
+    }
+  }
 
   return (
     <article className={`reservation-card${isPast ? ' reservation-card--past' : ''}`}>
@@ -58,12 +74,30 @@ export default function LocationCard({ location, onCancel, showClient = false, c
 
       <p className="catalog-price reservation-card-price">{formatPrice(location.prixTotal)}</p>
 
+      {dlError && (
+        <p style={{ color: 'var(--color-error, #ef4444)', fontSize: '0.8rem', marginBottom: '0.5rem' }}>
+          {dlError}
+        </p>
+      )}
+
       <div className="reservation-card-actions">
         <Link to={`/voitures/${encodeURIComponent(location.matricule)}`}>Voir le véhicule</Link>
+
+        {/* Bouton téléchargement facture PDF — visible pour toutes les réservations */}
+        <button
+          type="button"
+          className="app-link-btn"
+          onClick={handleDownloadFacture}
+          disabled={downloading}
+          title="Télécharger la facture PDF"
+        >
+          {downloading ? 'Génération…' : '⬇ Facture PDF'}
+        </button>
+
         {onCancel && !isPast && (
           <button
             type="button"
-            className="app-link-btn"
+            className="app-link-btn app-link-btn--danger"
             onClick={() => onCancel(location.id)}
             disabled={cancelling}
           >

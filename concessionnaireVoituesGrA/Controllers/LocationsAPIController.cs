@@ -19,43 +19,41 @@ namespace concessionnaireVoituesGrA.Controllers
             this.comptesService = comptesService;
         }
 
+        // ── GET /api/LocationsAPI ─────────────────────────────────────────────
+        // Admin → toutes les réservations | Client → les siennes uniquement
         [HttpGet]
         public IActionResult Get()
         {
             if (User.IsInRole("Admin"))
-            {
                 return Ok(locationsService.GetAllLocations());
-            }
 
             var idClient = GetCurrentIdClient();
             if (!idClient.HasValue)
-            {
                 return BadRequest("Complete your client profile before viewing reservations.");
-            }
 
             return Ok(locationsService.GetLocationsForClient(idClient.Value));
         }
 
+        // ── POST /api/LocationsAPI ────────────────────────────────────────────
+        // Crée une nouvelle réservation (rôle Client uniquement)
         [HttpPost]
         [Authorize(Roles = "Client")]
         public IActionResult Post([FromBody] LocationCreateDto model)
         {
             var idClient = GetCurrentIdClient();
             if (!idClient.HasValue)
-            {
                 return BadRequest("Complete your client profile before making a reservation.");
-            }
 
             var created = locationsService.CreerReservation(idClient.Value, model);
             if (created == null)
-            {
                 return BadRequest(
                     "Reservation failed. Check dates (must be today or later), vehicle, or availability (vehicle may already be booked).");
-            }
 
             return Ok(created);
         }
 
+        // ── DELETE /api/LocationsAPI/{id} ─────────────────────────────────────
+        // Admin peut tout annuler ; Client seulement ses propres réservations
         [HttpDelete("{id:int}")]
         public IActionResult Delete(int id)
         {
@@ -64,27 +62,44 @@ namespace concessionnaireVoituesGrA.Controllers
             {
                 var idClient = GetCurrentIdClient();
                 if (!idClient.HasValue)
-                {
                     return BadRequest("No profile linked to this account.");
-                }
                 restrict = idClient.Value;
             }
 
             if (!locationsService.Annuler(id, restrict))
-            {
                 return NotFound("Reservation not found or access denied.");
-            }
 
             return Ok();
         }
 
+        // ── GET /api/LocationsAPI/{id}/facture ────────────────────────────────
+        // Génère et retourne la facture PDF (bytes application/pdf)
+        // Admin : toutes les factures | Client : uniquement ses propres factures
+        [HttpGet("{id:int}/facture")]
+        public IActionResult GetFacture(int id, [FromServices] FacturePdfService pdfService)
+        {
+            var facture = locationsService.GetFacture(id);
+            if (facture == null)
+                return NotFound("Réservation introuvable.");
+
+            // Contrôle d'accès pour les clients
+            if (!User.IsInRole("Admin"))
+            {
+                var idClient = GetCurrentIdClient();
+                if (!idClient.HasValue || facture.IdClient != idClient.Value)
+                    return Forbid();
+            }
+
+            byte[] pdf = pdfService.Generer(facture);
+            return File(pdf, "application/pdf", $"facture-{id:D5}.pdf");
+        }
+
+        // ── Helpers ───────────────────────────────────────────────────────────
+
         private int? GetCurrentIdClient()
         {
             var username = User.Identity?.Name;
-            if (string.IsNullOrEmpty(username))
-            {
-                return null;
-            }
+            if (string.IsNullOrEmpty(username)) return null;
             return comptesService.GetIdClient(username);
         }
     }

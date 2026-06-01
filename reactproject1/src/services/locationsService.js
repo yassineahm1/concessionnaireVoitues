@@ -38,3 +38,27 @@ export async function cancelLocation(id) {
   });
   return handleResponse(response);
 }
+
+/**
+ * Télécharge la facture PDF d'une réservation.
+ * Déclenche automatiquement le téléchargement dans le navigateur.
+ */
+export async function downloadFacture(id) {
+  const response = await fetch(`${locationsApiUrl}/${id}/facture`, {
+    credentials: 'include',
+  });
+  if (!response.ok) {
+    const msg = await response.text();
+    throw new Error(msg || `Erreur HTTP ${response.status}`);
+  }
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `facture-${String(id).padStart(5, '0')}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
